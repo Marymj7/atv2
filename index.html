@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jarras - Movimento Perfeito</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #000000;
+        }
+
+        .container {
+            display: flex;
+            gap: 100px;
+            padding: 50px;
+        }
+
+        .jarra {
+            position: relative;
+            width: 220px;
+            height: 420px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 45px 45px 30px 30px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            overflow: hidden;
+        }
+
+        /* Boca da jarra */
+        .jarra::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 25%;
+            right: 25%;
+            height: 22px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px 15px 8px 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-bottom: none;
+            z-index: 2;
+        }
+
+        /* Fundo da jarra */
+        .jarra::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 5%;
+            right: 5%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 0 0 30px 30px;
+            z-index: 2;
+        }
+
+        .liquid {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            transition: height 1.2s linear;
+        }
+
+        .liquid-blue {
+            background: #0088ff;
+        }
+
+        .liquid-orange {
+            background: #ff6600;
+        }
+
+        @media (max-width: 700px) {
+            .container {
+                gap: 50px;
+                padding: 30px;
+            }
+            
+            .jarra {
+                width: 160px;
+                height: 320px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="jarra">
+            <div class="liquid liquid-blue" id="liquid1"></div>
+        </div>
+        
+        <div class="jarra">
+            <div class="liquid liquid-orange" id="liquid2"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentLevel1 = 92;
+        let currentLevel2 = 8;
+        let step = 1;
+        
+        const MIN_LEVEL = 8;
+        const MAX_LEVEL = 92;
+        
+        const liquid1 = document.getElementById('liquid1');
+        const liquid2 = document.getElementById('liquid2');
+        
+        function updateLiquids() {
+            liquid1.style.height = currentLevel1 + '%';
+            liquid2.style.height = currentLevel2 + '%';
+        }
+        
+        function animate() {
+            if (step === 1) {
+                // Azul esvaziando (92% -> 8%)
+                currentLevel1 -= 1.2;
+                currentLevel2 = 100 - currentLevel1;
+                
+                if (currentLevel1 <= MIN_LEVEL) {
+                    currentLevel1 = MIN_LEVEL;
+                    currentLevel2 = MAX_LEVEL;
+                    step = 2;
+                }
+            } 
+            else if (step === 2) {
+                // Laranja esvaziando (92% -> 8%)
+                currentLevel2 -= 1.2;
+                currentLevel1 = 100 - currentLevel2;
+                
+                if (currentLevel2 <= MIN_LEVEL) {
+                    currentLevel2 = MIN_LEVEL;
+                    currentLevel1 = MAX_LEVEL;
+                    step = 1;
+                }
+            }
+            
+            updateLiquids();
+        }
+        
+        let lastTimestamp = 0;
+        
+        function animationLoop(currentTime) {
+            if (!lastTimestamp || currentTime - lastTimestamp >= 20) {
+                animate();
+                lastTimestamp = currentTime;
+            }
+            requestAnimationFrame(animationLoop);
+        }
+        
+        requestAnimationFrame(animationLoop);
+        updateLiquids();
+    </script>
+</body>
+</html>
